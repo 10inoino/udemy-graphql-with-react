@@ -1,16 +1,5 @@
-import {
-  useQuery,
-  gql
-} from "@apollo/client";
-
-const ME = gql`
-  query me {
-    user(login: "10inoino") {
-      name
-      avatarUrl
-    }
-  }
-`
+import { useQuery } from "@apollo/client";
+import { ME } from "./graphql";
 
 function GetAccountData() {
   const { loading, error, data } = useQuery(ME);
