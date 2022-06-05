@@ -63,10 +63,12 @@ const App = () => {
   };
 
   const StarButton = (props) => {
-    const totalCount = props.node.stargazers.totalCount;
+    const node = props.node;
+    const totalCount = node.stargazers.totalCount;
+    const viewerHasStarred = node.viewerHasStarred;
     return (
       <button>
-        {totalCount} {totalCount === 1 ? "star" : "stars"}
+        {totalCount} {totalCount === 1 ? "star" : "stars"} | {viewerHasStarred ? "starred" : "-"}
       </button>
     );
   };
