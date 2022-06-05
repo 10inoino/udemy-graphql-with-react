@@ -20,7 +20,8 @@ function GetRepositories(props) {
 
   const edges = data.search.edges;
   const renderHTML = [];
-  const unit = data.search.repositoryCount === 1 ? "Repository" : "Repositories";
+  const unit =
+    data.search.repositoryCount === 1 ? "Repository" : "Repositories";
   const repositoryCount = (
     <h2>
       GitHub Repositories Search Results - {data.search.repositoryCount} {unit}
@@ -29,14 +30,19 @@ function GetRepositories(props) {
 
   renderHTML.push(repositoryCount);
   renderHTML.push(
-    edges.map(({ cursor, node }) => (
-      <div key={cursor}>
-        <h2>{node.id}</h2>
-        <p>{node.name}</p>
-        <p>{node.url}</p>
-        <p>{node.viewerHasStarred ? "true" : "false"}</p>
-      </div>
-    ))
+    <ul>
+      {edges.map(({ cursor, node }) => (
+        <li key={node.id}>
+          <a href={node.url} target="_blank" rel="noreferrer">{node.name}</a>
+        </li>
+        // <div key={cursor}>
+        //   <h2>{node.id}</h2>
+        //   <p>{node.name}</p>
+        //   <p>{node.url}</p>
+        //   <p>{node.viewerHasStarred ? "true" : "false"}</p>
+        // </div>
+      ))}
+    </ul>
   );
 
   return renderHTML;
