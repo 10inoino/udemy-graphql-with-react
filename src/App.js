@@ -44,6 +44,8 @@ const App = () => {
               <a href={node.url} target="_blank" rel="noreferrer">
                 {node.name}
               </a>
+              $nbsp;
+              <StarButton node={node} />
             </li>
           ))}
         </ul>
@@ -53,13 +55,20 @@ const App = () => {
         {search.pageInfo.hasNextPage ? (
           <button onClick={() => goNext(search)}>Next</button>
         ) : null}
-        <div>
-          Page : {page}
-        </div>
+        <div>Page : {page}</div>
       </>
     );
 
     return renderHTML;
+  };
+
+  const StarButton = (props) => {
+    const totalCount = props.node.stargazers.totalCount;
+    return (
+      <button>
+        {totalCount} {totalCount === 1 ? "star" : "stars"}
+      </button>
+    );
   };
 
   const handleChange = (e) => {
@@ -78,7 +87,7 @@ const App = () => {
       query: prev.query,
     }));
 
-    setPage((prev) => (prev + 1));
+    setPage((prev) => prev + 1);
   };
 
   const goPrevious = (search) => {
@@ -90,7 +99,7 @@ const App = () => {
       query: prev.query,
     }));
 
-    setPage((prev) => (prev - 1));
+    setPage((prev) => prev - 1);
   };
 
   return (
