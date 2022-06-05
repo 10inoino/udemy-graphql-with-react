@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client";
 import { Component } from "react";
 import { SEARCH_REPOSITORIES } from "./graphql";
 
-const VARIABLES = {
+const DEFAULT_STATE = {
   first: 5,
   after: null,
   last: null,
@@ -19,32 +19,54 @@ function GetRepositories(props) {
   if (error) return <p>Error : {error.message}</p>;
 
   const edges = data.search.edges;
+  const renderHTML = [];
+  const repositoryCount = (
+    <h1>Repository Count : {data.search.repositoryCount}</h1>
+  );
+  renderHTML.push(repositoryCount);
+  renderHTML.push(
+    edges.map(({ cursor, node }) => (
+      <div key={cursor}>
+        <h2>{node.id}</h2>
+        <p>{node.name}</p>
+        <p>{node.url}</p>
+        <p>{node.viewerHasStarred ? "true" : "false"}</p>
+      </div>
+    ))
+  );
 
-  return edges.map(({ cursor, node }) => (
-    <div key={cursor}>
-      <h1>{node.id}</h1>
-      <p>{node.name}</p>
-      <p>{node.url}</p>
-      <p>{node.viewerHasStarred ? "true" : "false"}</p>
-    </div>
-  ));
+  return renderHTML;
 }
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = VARIABLES;
+    this.state = DEFAULT_STATE;
+
+    this.handleChange = this.handleChange.bind(this);
+  }
+
+  handleChange(event) {
+    this.setState({
+      ...DEFAULT_STATE,
+      query: event.target.value,
+    });
   }
 
   render() {
+    console.log(this.state.query);
+
     return (
       <div>
+        <form>
+          <input value={this.state.query} onChange={this.handleChange} />
+        </form>
         <GetRepositories
-          first={VARIABLES.first}
-          after={VARIABLES.after}
-          last={VARIABLES.last}
-          before={VARIABLES.before}
-          query={VARIABLES.query}
+          first={this.state.first}
+          after={this.state.after}
+          last={this.state.last}
+          before={this.state.before}
+          query={this.state.query}
         />
       </div>
     );
