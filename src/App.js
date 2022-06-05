@@ -13,6 +13,7 @@ const DEFAULT_STATE = {
 
 const App = () => {
   const [variable, setVariable] = useState(DEFAULT_STATE);
+  const [page, setPage] = useState(1);
 
   const GetRepositories = (props) => {
     const { loading, error, data } = useQuery(SEARCH_REPOSITORIES, {
@@ -46,10 +47,15 @@ const App = () => {
             </li>
           ))}
         </ul>
+        {search.pageInfo.hasPreviousPage ? (
+          <button onClick={() => goPrevious(search)}>Previous</button>
+        ) : null}
         {search.pageInfo.hasNextPage ? (
           <button onClick={() => goNext(search)}>Next</button>
         ) : null}
-        {search.pageInfo.hasPreviousPage ? <button>Previous</button> : null}
+        <div>
+          Page : {page}
+        </div>
       </>
     );
 
@@ -69,19 +75,23 @@ const App = () => {
       after: search.pageInfo.endCursor,
       last: null,
       before: null,
-      query: prev.query
+      query: prev.query,
     }));
+
+    setPage((prev) => (prev + 1));
   };
 
-  // const goPrevious = (search) => {
-  //   setVariable((prev) => ({
-  //     first: PER_PAGE,
-  //     after: search.pageInfo.endCursor,
-  //     last: null,
-  //     before: null,
-  //     query: prev.query
-  //   }));
-  // };
+  const goPrevious = (search) => {
+    setVariable((prev) => ({
+      first: null,
+      after: null,
+      last: PER_PAGE,
+      before: search.pageInfo.startCursor,
+      query: prev.query,
+    }));
+
+    setPage((prev) => (prev - 1));
+  };
 
   return (
     <div>
