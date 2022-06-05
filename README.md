@@ -1,5 +1,6 @@
 # 参考資料
 - [フロントエンドエンジニアのためのGraphQL with React 入門](https://www.udemy.com/share/101XEM3@FIWFFT4VuB6dg8lnHPhoBYZphhKIa_BQjC9tWeaQRth8_B6tqJg_w1wRcbAAsMD6/)
+- [GitHub GraphQLのPlayGround](https://docs.github.com/ja/graphql/overview/explorer)
 
 # Getting Started with Create React App
 
