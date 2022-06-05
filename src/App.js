@@ -20,9 +20,13 @@ function GetRepositories(props) {
 
   const edges = data.search.edges;
   const renderHTML = [];
+  const unit = data.search.repositoryCount === 1 ? "Repository" : "Repositories";
   const repositoryCount = (
-    <h1>Repository Count : {data.search.repositoryCount}</h1>
+    <h2>
+      GitHub Repositories Search Results - {data.search.repositoryCount} {unit}
+    </h2>
   );
+
   renderHTML.push(repositoryCount);
   renderHTML.push(
     edges.map(({ cursor, node }) => (
