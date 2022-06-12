@@ -1,6 +1,6 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { useState } from "react";
-import { SEARCH_REPOSITORIES } from "./graphql";
+import { ADD_STAR, SEARCH_REPOSITORIES } from "./graphql";
 
 const PER_PAGE = 5;
 const DEFAULT_STATE = {
@@ -25,7 +25,6 @@ const App = () => {
 
     const search = data.search;
     const edges = search.edges;
-    const renderHTML = [];
     const unit =
       data.search.repositoryCount === 1 ? "Repository" : "Repositories";
     const repositoryCount = (
@@ -34,23 +33,22 @@ const App = () => {
         {unit}
       </h2>
     );
-
-    renderHTML.push(repositoryCount);
-    renderHTML.push(
+    return (
       <>
+        {repositoryCount}
         <ul>
           {edges.map(({ node }) => (
             <li key={node.id}>
               <a href={node.url} target="_blank" rel="noreferrer">
                 {node.name}
               </a>
-              $nbsp;
-              <StarButton node={node} />
+              {" "}
+              <StarButton node={node} key={node.id} />
             </li>
           ))}
         </ul>
         {search.pageInfo.hasPreviousPage ? (
-          <button onClick={() => goPrevious(search)}>Previous</button>
+          <button onClick={() => goPrevious(search) }>Previous</button>
         ) : null}
         {search.pageInfo.hasNextPage ? (
           <button onClick={() => goNext(search)}>Next</button>
@@ -58,19 +56,47 @@ const App = () => {
         <div>Page : {page}</div>
       </>
     );
+  };
 
-    return renderHTML;
+  const AddStar = (props) => {
+    const [addStar, { loading, error }] = useMutation(props.mutation, {
+      variables: { input: props.id },
+    });
+
+    if (loading) return <p>Now Loading...</p>;
+    if (error) return <p>An error occurred</p>;
+
+    return addStar;
   };
 
   const StarButton = (props) => {
     const node = props.node;
+    // トータルカウント
     const totalCount = node.stargazers.totalCount;
+    // スターがついているかどうか
     const viewerHasStarred = node.viewerHasStarred;
-    return (
-      <button>
-        {totalCount} {totalCount === 1 ? "star" : "stars"} | {viewerHasStarred ? "starred" : "-"}
-      </button>
-    );
+    const StarStatus = ({ addStar }) => {
+      return (
+        <button
+          onClick={() => {
+            addStar({
+              variables: { input: { starrableId: node.id } },
+            });
+          }}
+          key={node.id}
+        >
+          {totalCount} {totalCount === 1 ? "star" : "stars"}|{" "}
+          {viewerHasStarred ? "starred" : "-"}
+        </button>
+      );
+    };
+
+    const [addStarFunc, { loading, error }] = useMutation(ADD_STAR);
+
+    if (loading) return <button disabled>Now Loading...</button>;
+    if (error) return <button disabled>An error occurred</button>;
+
+    return <StarStatus addStar={addStarFunc} />;
   };
 
   const handleChange = (e) => {
