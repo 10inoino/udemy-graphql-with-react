@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@apollo/client";
 import { useState } from "react";
-import { ADD_STAR, SEARCH_REPOSITORIES } from "./graphql";
+import { ADD_STAR, SEARCH_REPOSITORIES, REMOVE_STAR } from "./graphql";
 
 const PER_PAGE = 5;
 const DEFAULT_STATE = {
@@ -58,28 +58,15 @@ const App = () => {
     );
   };
 
-  const AddStar = (props) => {
-    const [addStar, { loading, error }] = useMutation(props.mutation, {
-      variables: { input: props.id },
-    });
-
-    if (loading) return <p>Now Loading...</p>;
-    if (error) return <p>An error occurred</p>;
-
-    return addStar;
-  };
-
   const StarButton = (props) => {
     const node = props.node;
-    // トータルカウント
     const totalCount = node.stargazers.totalCount;
-    // スターがついているかどうか
     const viewerHasStarred = node.viewerHasStarred;
-    const StarStatus = ({ addStar }) => {
+    const StarStatus = ({ addOrRemoveStar }) => {
       return (
         <button
           onClick={() => {
-            addStar({
+            addOrRemoveStar({
               variables: { input: { starrableId: node.id } },
             });
           }}
@@ -91,12 +78,13 @@ const App = () => {
       );
     };
 
-    const [addStarFunc, { loading, error }] = useMutation(ADD_STAR);
+    const gqlQuery = viewerHasStarred ? REMOVE_STAR : ADD_STAR;
+    const [addOrRemoveStar, { loading, error }] = useMutation(gqlQuery);
 
     if (loading) return <button disabled>Now Loading...</button>;
     if (error) return <button disabled>An error occurred</button>;
 
-    return <StarStatus addStar={addStarFunc} />;
+    return <StarStatus addOrRemoveStar={addOrRemoveStar} />;
   };
 
   const handleChange = (e) => {
