@@ -68,4 +68,4 @@ export const REMOVE_STAR = gql`
       }
     }
   }
-`
+`;

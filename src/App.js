@@ -41,14 +41,13 @@ const App = () => {
             <li key={node.id}>
               <a href={node.url} target="_blank" rel="noreferrer">
                 {node.name}
-              </a>
-              {" "}
-              <StarButton node={node} key={node.id} />
+              </a>{" "}
+              <StarButton node={node} key={node.id} {...props} />
             </li>
           ))}
         </ul>
         {search.pageInfo.hasPreviousPage ? (
-          <button onClick={() => goPrevious(search) }>Previous</button>
+          <button onClick={() => goPrevious(search)}>Previous</button>
         ) : null}
         {search.pageInfo.hasNextPage ? (
           <button onClick={() => goNext(search)}>Next</button>
@@ -59,7 +58,7 @@ const App = () => {
   };
 
   const StarButton = (props) => {
-    const node = props.node;
+    const { node, query, first, last, before, after } = props;
     const totalCount = node.stargazers.totalCount;
     const viewerHasStarred = node.viewerHasStarred;
     const StarStatus = ({ addOrRemoveStar }) => {
@@ -79,7 +78,20 @@ const App = () => {
     };
 
     const gqlQuery = viewerHasStarred ? REMOVE_STAR : ADD_STAR;
-    const [addOrRemoveStar, { loading, error }] = useMutation(gqlQuery);
+    const [addOrRemoveStar, { loading, error }] = useMutation(gqlQuery, {
+      refetchQueries: [
+        {
+          query: SEARCH_REPOSITORIES,
+          variables: {
+            query,
+            first,
+            last,
+            before,
+            after,
+          },
+        },
+      ],
+    });
 
     if (loading) return <button disabled>Now Loading...</button>;
     if (error) return <button disabled>An error occurred</button>;
